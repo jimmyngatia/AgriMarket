@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block title %}All Products - AgriMarket{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-leaf text-success"></i> All Products
+                </h1>
+                <p class="text-muted mb-0">Discover fresh produce from local farmers</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-md-end mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'home' %}" class="text-decoration-none">
+                                <i class="fas fa-home"></i> Home
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">All Products</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search and Filter Section -->
+<section class="py-4 bg-white border-bottom">
+    <div class="container">
+        <form method="GET" class="row g-3" id="filterForm">
+            <!-- Search Bar -->
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control" 
+                           name="search" 
+                           value="{{ search_query }}"
+                           placeholder="Search products, farmers..."
+                           id="searchInput">
+                </div>
+            </div>
+            
+            <!-- Category Filter -->
+            <div class="col-md-2">
+                <select class="form-select" name="category" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    {% for category_code, category_name in categories %}
+                        <option value="{{ category_code }}" 
+                                {% if category_filter == category_code %}selected{% endif %}>
+                            {{ category_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Price Range -->
+            <div class="col-md-2">
+                <input type="number" 
+                       class="form-control" 
+                       name="min_price" 
+                       value="{{ min_price }}"
+                       placeholder="Min Price"
+                       step="0.01"
+                       min="0">
+            </div>
+            
+            <div class="col-md-2">
+                <input type="number" 
+                       class="form-control" 
+                       name="max_price" 
+                       value="{{ max_price }}"
+                       placeholder="Max Price"
+                       step="0.01"
+                       min="0">
+            </div>
+            
+            <!-- Location Filter -->
+            <div class="col-md-2">
+                <input type="text" 
+                       class="form-control" 
+                       name="location" 
+                       value="{{ location_filter }}"
+                       placeholder="Location"
+                       list="locationSuggestions">
+                <datalist id="locationSuggestions">
+                    {% for location in locations %}
+                        <option value="{{ location }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+        </form>
+        
+        <!-- Active Filters Display -->
+        {% if search_query or category_filter or min_price or max_price or location_filter %}
+        <div class="mt-3">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="text-muted">Active filters:</span>
+                
+                {% if search_query %}
+                <span class="badge bg-primary">
+                    Search: "{{ search_query }}"
+                    <a href="?{% if category_filter %}category={{ category_filter }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if location_filter %}location={{ location_filter }}{% endif %}" 
+                       class="text-white ms-1">×</a>
+                </span>
+                {% endif %}
+                
+                {% if category_filter %}
+                <span class="badge bg-success">
+                    Category: {{ category_filter }}
+                    <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if location_filter %}location={{ location_filter }}{% endif %}" 
+                       class="text-white ms-1">×</a>
+                </span>
+                {% endif %}
+                
+                {% if min_price %}
+                <span class="badge bg-info">
+                    Min: ${{ min_price }}
+                    <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if location_filter %}location={{ location_filter }}{% endif %}" 
+                       class="text-white ms-1">×</a>
+                </span>
+                {% endif %}
+                
+                {% if max_price %}
+                <span class="badge bg-info">
+                    Max: ${{ max_price }}
+                    <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if location_filter %}location={{ location_filter }}{% endif %}" 
+                       class="text-white ms-1">×</a>
+                </span>
+                {% endif %}
+                
+                {% if location_filter %}
+                <span class="badge bg-warning">
+                    Location: "{{ location_filter }}"
+                    <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if category_filter %}category={{ category_filter }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}" 
+                       class="text-white ms-1">×</a>
+                </span>
+                {% endif %}
+                
+                <a href="{% url 'products_list' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-times"></i> Clear All
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Products Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h4 mb-0">
+                Products Available
+            </h2>
+            <div class="text-muted">
+                {{ total_products }} product{{ total_products|pluralize }} found
+            </div>
+        </div>
+        
+        {% if products %}
+            <div class="row g-4" id="productsGrid">
+                {% for product in products %}
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm product-card">
+                            <div class="position-relative">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" 
+                                         class="card-img-top" 
+                                         alt="{{ product.name }}" 
+                                         style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                         style="height: 200px;">
+                                        <i class="fas fa-image fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Category Badge -->
+                                <span class="position-absolute top-0 end-0 m-2 badge bg-secondary">
+                                    {{ product.category }}
+                                </span>
+                                
+                                <!-- Quantity Badge -->
+                                {% if product.quantity < 10 %}
+                                    <span class="position-absolute top-0 start-0 m-2 badge bg-warning">
+                                        Low Stock
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-user"></i> {{ product.farmer.full_name|default:product.farmer.username }}
+                                </p>
+                                
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt"></i> {{ product.location }}
+                                </p>
+                                
+                                <p class="card-text flex-grow-1">
+                                    {{ product.description|truncatewords:12 }}
+                                </p>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <strong class="text-success fs-5">${{ product.price }}</strong>
+                                            <small class="text-muted d-block">per unit</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-info">{{ product.quantity }} available</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <a href="{% url 'product_detail' product.id %}" 
+                                           class="btn btn-success">
+                                            <i class="fas fa-eye"></i> View Details
+                                        </a>
+                                    </div>
+                                    
+                                    <small class="text-muted d-block mt-2 text-center">
+                                        Added {{ product.created_at|date:"M d, Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No Products Found</h4>
+                <p class="text-muted mb-4">
+                    {% if search_query or category_filter or min_price or max_price or location_filter %}
+                        Try adjusting your search criteria or filters.
+                    {% else %}
+                        No products are currently available. Check back later!
+                    {% endif %}
+                </p>
+                {% if search_query or category_filter or min_price or max_price or location_filter %}
+                    <a href="{% url 'products_list' %}" class="btn btn-primary">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </a>
+                {% else %}
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- JavaScript for Real-time Filtering -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('filterForm');
+    const inputs = form.querySelectorAll('input, select');
+    
+    // Auto-submit form when filters change
+    inputs.forEach(input => {
+        input.addEventListener('change', function() {
+            form.submit();
+        });
+        
+        // For text inputs, add a small delay to avoid too many requests
+        if (input.type === 'text' || input.type === 'search') {
+            let timeout;
+            input.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    form.submit();
+                }, 500);
+            });
+        }
+    });
+    
+    // Add hover effects to product cards
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+
+<style>
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.badge a {
+    text-decoration: none;
+}
+
+.badge a:hover {
+    text-decoration: underline;
+}
+</style>
+{% endblock %}

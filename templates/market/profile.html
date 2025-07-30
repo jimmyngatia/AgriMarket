@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - AgriMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-circle"></i> User Profile
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4">
+                            <i class="fas fa-user-circle fa-5x text-muted mb-3"></i>
+                            <h5>{{ user.full_name|default:user.username }}</h5>
+                            <span class="badge bg-success">{{ user.user_type }}</span>
+                        </div>
+                        <div class="col-md-8">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Username:</strong></td>
+                                    <td>{{ user.username }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Full Name:</strong></td>
+                                    <td>{{ user.full_name|default:"Not provided" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email:</strong></td>
+                                    <td>{{ user.email|default:"Not provided" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phone Number:</strong></td>
+                                    <td>{{ user.phone_number|default:"Not provided" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>User Type:</strong></td>
+                                    <td><span class="badge bg-success">{{ user.user_type }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Date Joined:</strong></td>
+                                    <td>{{ user.date_joined|date:"F d, Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Last Login:</strong></td>
+                                    <td>{{ user.last_login|date:"F d, Y g:i A"|default:"Never" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <button class="btn btn-primary me-2" disabled>
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-outline-secondary" disabled>
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <small>
+                            <i class="fas fa-info-circle"></i> 
+                            Profile editing features are coming soon!
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

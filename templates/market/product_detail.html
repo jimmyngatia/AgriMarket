@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - AgriMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'home' %}" class="text-decoration-none">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'home' %}?category={{ product.category }}" class="text-decoration-none">
+                    {{ product.category }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {{ product.name }}
+            </li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" 
+                         class="card-img-top" 
+                         alt="{{ product.name }}" 
+                         style="height: 400px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                         style="height: 400px;">
+                        <i class="fas fa-image fa-5x text-muted"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <div class="mb-3">
+                <span class="badge bg-secondary fs-6 mb-2">{{ product.category }}</span>
+                <h1 class="display-5">{{ product.name }}</h1>
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-user text-muted me-2"></i>
+                    <strong>Farmer:</strong>
+                    <span class="ms-2">{{ product.farmer.full_name|default:product.farmer.username }}</span>
+                </div>
+                
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                    <strong>Location:</strong>
+                    <span class="ms-2">{{ product.location }}</span>
+                </div>
+                
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-calendar text-muted me-2"></i>
+                    <strong>Listed:</strong>
+                    <span class="ms-2">{{ product.created_at|date:"F d, Y" }}</span>
+                </div>
+            </div>
+
+            <!-- Price and Quantity -->
+            <div class="card bg-light mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h3 class="text-success mb-0">${{ product.price }}</h3>
+                            <small class="text-muted">per unit</small>
+                        </div>
+                        <div class="col-6 text-end">
+                            <h4 class="mb-0">
+                                <span class="badge bg-info">{{ product.quantity }} available</span>
+                            </h4>
+                            {% if product.quantity < 10 %}
+                                <small class="text-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> Low stock
+                                </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <h5><i class="fas fa-info-circle"></i> Description</h5>
+                <p class="lead">{{ product.description }}</p>
+            </div>
+
+            <!-- Contact Actions -->
+            <div class="card border-success">
+                <a href="https://wa.me/{{ product.farmer.phone_number }}?text=Hello, I'm interested in your {{ product.name }} You currently posted on AgriMarket" target="_blank" class="text-decoration-none" style="background-color: #25D366;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fab fa-whatsapp"></i>  Contact on Whatsapp
+                        </h5>
+                    </div>
+                </a>
+                <div class="card-body">
+                    {% if product.farmer.phone_number %}
+                        <p class="mb-2">
+                            <strong>Phone:</strong> 
+                            <a href="tel:{{ product.farmer.phone_number }}" class="text-decoration-none">
+                                {{ product.farmer.phone_number }}
+                            </a>
+                        </p>
+                    {% endif %}
+                    
+                    {% if product.farmer.email %}
+                        <p class="mb-3">
+                            <strong>Email:</strong> 
+                            <a href="mailto:{{ product.farmer.email }}" class="text-decoration-none">
+                                {{ product.farmer.email }}
+                            </a>
+                        </p>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2">
+                        {% if product.farmer.phone_number %}
+                            <a href="tel:{{ product.farmer.phone_number }}" 
+                               class="btn btn-success">
+                                <i class="fas fa-phone"></i> Call Now
+                            </a>
+                        {% endif %}
+                        
+                        {% if product.farmer.email %}
+                            <a href="mailto:{{ product.farmer.email }}?subject=Inquiry about {{ product.name }}" 
+                               class="btn btn-outline-success">
+                                <i class="fas fa-envelope"></i> Send Email
+                            </a>
+                        {% endif %}
+                        
+                        <button class="btn btn-outline-primary" disabled>
+                            <i class="fas fa-shopping-cart"></i> Order Online (Coming Soon)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share Product -->
+            <div class="mt-3">
+                <h6>Share this product:</h6>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm" 
+                            onclick="navigator.share ? navigator.share({title: '{{ product.name }}', url: window.location.href}) : copyToClipboard()">
+                        <i class="fas fa-share"></i> Share
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard()">
+                        <i class="fas fa-copy"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other Products from Same Farmer -->
+    {% if other_products %}
+    <div class="mt-5">
+        <h3 class="mb-4">
+            <i class="fas fa-seedling"></i> 
+            More from {{ product.farmer.full_name|default:product.farmer.username }}
+        </h3>
+        
+        <div class="row g-4">
+            {% for other_product in other_products %}
+                <div class="col-sm-6 col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        {% if other_product.image %}
+                            <img src="{{ other_product.image.url }}" 
+                                 class="card-img-top" 
+                                 alt="{{ other_product.name }}" 
+                                 style="height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 150px;">
+                                <i class="fas fa-image fa-2x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <h6 class="card-title">{{ other_product.name }}</h6>
+                            <p class="card-text text-success">
+                                <strong>${{ other_product.price }}</strong>
+                            </p>
+                            <a href="{% url 'product_detail' other_product.id %}" 
+                               class="btn btn-outline-success btn-sm">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Back to Products -->
+    <div class="mt-4">
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to All Products
+        </a>
+    </div>
+</div>
+
+<script>
+function copyToClipboard() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        // Show a temporary success message
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        btn.classList.add('btn-success');
+        btn.classList.remove('btn-outline-secondary');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-secondary');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

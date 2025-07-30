@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Product - AgriMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header text-center bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-plus"></i> Add New Product
+                    </h3>
+                    <p class="mb-0">List your fresh produce for buyers</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                                        <i class="fas fa-tag"></i> Product Name *
+                                    </label>
+                                    {{ form.name }}
+                                    {% if form.name.help_text %}
+                                        <div class="form-text">{{ form.name.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label">
+                                        <i class="fas fa-list"></i> Category *
+                                    </label>
+                                    {{ form.category }}
+                                    {% if form.category.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.category.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.price.id_for_label }}" class="form-label">
+                                        <i class="fas fa-dollar-sign"></i> Price per Unit *
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form.price }}
+                                    </div>
+                                    {% if form.price.help_text %}
+                                        <div class="form-text">{{ form.price.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.price.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.price.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.quantity.id_for_label }}" class="form-label">
+                                        <i class="fas fa-boxes"></i> Available Quantity *
+                                    </label>
+                                    {{ form.quantity }}
+                                    {% if form.quantity.help_text %}
+                                        <div class="form-text">{{ form.quantity.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.quantity.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.quantity.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.location.id_for_label }}" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Location *
+                            </label>
+                            {{ form.location }}
+                            {% if form.location.help_text %}
+                                <div class="form-text">{{ form.location.help_text }}</div>
+                            {% endif %}
+                            {% if form.location.errors %}
+                                <div class="text-danger small">
+                                    {{ form.location.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                <i class="fas fa-align-left"></i> Description *
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small">
+                                    {{ form.description.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">
+                                <i class="fas fa-camera"></i> Product Image
+                            </label>
+                            {{ form.image }}
+                            {% if form.image.help_text %}
+                                <div class="form-text">{{ form.image.help_text }}</div>
+                            {% endif %}
+                            {% if form.image.errors %}
+                                <div class="text-danger small">
+                                    {{ form.image.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-success btn-lg flex-fill">
+                                <i class="fas fa-plus"></i> Add Product
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Tips Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb text-warning"></i> Tips for Better Sales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>High-quality photos:</strong> Clear, well-lit images attract more buyers</li>
+                        <li><strong>Detailed descriptions:</strong> Include freshness, organic status, and growing methods</li>
+                        <li><strong>Competitive pricing:</strong> Research local market prices</li>
+                        <li><strong>Accurate quantities:</strong> Be honest about what you have available</li>
+                        <li><strong>Clear location:</strong> Help buyers find you easily</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
